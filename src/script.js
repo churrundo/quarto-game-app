@@ -7,6 +7,7 @@ const pieces = {
       water: "passive",
       earth: "active",
     },
+    image: "../styles/figures/puer.png",
     inPlay: true,
   },
   amissio: {
@@ -17,6 +18,7 @@ const pieces = {
       water: "active",
       earth: "passive",
     },
+    image: "../styles/figures/amissio.png",
     inPlay: true,
   },
   albus: {
@@ -27,6 +29,7 @@ const pieces = {
       water: "active",
       earth: "passive",
     },
+    image: "../styles/figures/albus.png",
     inPlay: true,
   },
   populus: {
@@ -37,6 +40,7 @@ const pieces = {
       water: "passive",
       earth: "passive",
     },
+    image: "../styles/figures/populus.png",
     inPlay: true,
   },
   fortunaMajor: {
@@ -47,6 +51,7 @@ const pieces = {
       water: "active",
       earth: "active",
     },
+    image: "../styles/figures/fortuna-major.png",
     inPlay: true,
   },
   conjunctio: {
@@ -57,6 +62,7 @@ const pieces = {
       water: "active",
       earth: "passive",
     },
+    image: "../styles/figures/conjunctio.png",
     inPlay: true,
   },
   puella: {
@@ -67,6 +73,7 @@ const pieces = {
       water: "active",
       earth: "active",
     },
+    image: "../styles/figures/puella.png",
     inPlay: true,
   },
   rubeus: {
@@ -77,6 +84,7 @@ const pieces = {
       water: "passive",
       earth: "passive",
     },
+    image: "../styles/figures/rubeus.png",
     inPlay: true,
   },
   acquisitio: {
@@ -87,6 +95,7 @@ const pieces = {
       water: "passive",
       earth: "active",
     },
+    image: "../styles/figures/acquisitio.png",
     inPlay: true,
   },
   carcer: {
@@ -97,6 +106,7 @@ const pieces = {
       water: "passive",
       earth: "active",
     },
+    image: "../styles/figures/carcer.png",
     inPlay: true,
   },
   tristitia: {
@@ -107,6 +117,7 @@ const pieces = {
       water: "passive",
       earth: "active",
     },
+    image: "../styles/figures/tristitia.png",
     inPlay: true,
   },
   laetitia: {
@@ -117,6 +128,7 @@ const pieces = {
       water: "passive",
       earth: "passive",
     },
+    image: "../styles/figures/laetitia.png",
     inPlay: true,
   },
   caudaDraconis: {
@@ -127,16 +139,18 @@ const pieces = {
       water: "active",
       earth: "passive",
     },
+    image: "../styles/figures/cauda-draconis.png",
     inPlay: true,
   },
   caputDraconis: {
     name: "Caput Draconis",
     attributes: {
-      fire: "pasive",
+      fire: "passive",
       air: "active",
       water: "active",
       earth: "active",
     },
+    image: "../styles/figures/caput-draconis.png",
     inPlay: true,
   },
   fortunaMinor: {
@@ -147,6 +161,7 @@ const pieces = {
       water: "passive",
       earth: "passive",
     },
+    image: "../styles/figures/fortuna-minor.png",
     inPlay: true,
   },
   via: {
@@ -157,8 +172,16 @@ const pieces = {
       water: "active",
       earth: "active",
     },
+    image: "../styles/figures/via.png",
     inPlay: true,
   },
+};
+
+let img = new Image();
+img.src = "../styles/geomantic-figures.png";
+
+img.onload = () => {
+  ctx.drawImage(img, sx, sy, sWidth, sHeight, dx, dy, dWidth, dHeight);
 };
 
 function renderPieces() {
@@ -169,7 +192,9 @@ function renderPieces() {
     if (piece.inPlay) {
       let pieceElement = document.createElement("div");
       pieceElement.classList.add("piece");
-      pieceElement.innerHTML = piece.name;
+      pieceElement.innerHTML = `
+      <img src="${piece.image}" alt="${piece.name}">
+      <div class="piece-name">${piece.name}</div>`;
       pieceElement.addEventListener("click", function () {
         selectPiece(key);
       });
@@ -180,10 +205,9 @@ function renderPieces() {
 
 let selectedPiece = null;
 function selectPiece(pieceKey) {
-    selectPiece = pieceKey;
-    pieces[pieceKey].inPlay = false;
-    renderPieces();
+  selectPiece = pieceKey;
+  pieces[pieceKey].inPlay = false;
+  renderPieces();
 }
 
 renderPieces();
-console.log(pieces);
