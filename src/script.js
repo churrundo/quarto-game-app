@@ -193,8 +193,7 @@ function renderPieces() {
       let pieceElement = document.createElement("div");
       pieceElement.classList.add("piece");
       pieceElement.innerHTML = `
-      <img src="${piece.image}" alt="${piece.name}">
-      <div class="piece-name">${piece.name}</div>`;
+      <img src="${piece.image}" alt="${piece.name}">`;
       pieceElement.addEventListener("click", function () {
         selectPiece(key);
       });
