@@ -177,13 +177,6 @@ const pieces = {
   },
 };
 
-let img = new Image();
-img.src = "../styles/geomantic-figures.png";
-
-img.onload = () => {
-  ctx.drawImage(img, sx, sy, sWidth, sHeight, dx, dy, dWidth, dHeight);
-};
-
 function renderPieces() {
   const pieceContainer = document.getElementById("piece-container");
   pieceContainer.innerHTML = "";
@@ -195,6 +188,11 @@ function renderPieces() {
       pieceElement.innerHTML = `
       <img src="${piece.image}" alt="${piece.name}">`;
       pieceElement.addEventListener("click", function () {
+        const previouslySelectedPiece =
+          document.querySelector(".selected-piece");
+        if (previouslySelectedPiece) {
+          previouslySelectedPiece.classList.remove("selected-piece");
+        }
         selectPiece(key);
       });
       pieceContainer.appendChild(pieceElement);
@@ -204,9 +202,35 @@ function renderPieces() {
 
 let selectedPiece = null;
 function selectPiece(pieceKey) {
-  selectPiece = pieceKey;
+  selectedPiece = pieceKey;
   pieces[pieceKey].inPlay = false;
   renderPieces();
 }
 
 renderPieces();
+
+let currentPlayer = "Player1";
+
+function placePieceOnBoard(cell) {
+  if (cell.innerHTML == "" && selectedPiece != null) {
+    let pieceElement = document.createElement("img");
+    pieceElement.src = pieces[selectedPiece].image;
+    pieceElement.alt = pieces[selectedPiece.name];
+    cell.appendChild(pieceElement);
+    pieces[selectedPiece].inPlay = false;
+    selectedPiece = null;
+    switchPlayer();
+  }
+}
+
+function switchPlayer() {
+  currentPlayer = currentPlayer === "Player1" ? "Player2" : "Player1";
+  console.log(currentPlayer + "'s turn");
+}
+
+const cells = document.querySelectorAll('.cell');
+cells.forEach((cell) => {
+  cell.addEventListener("click", () => {
+    placePieceOnBoard(cell);
+  });
+});

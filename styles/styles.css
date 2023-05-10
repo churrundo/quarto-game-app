@@ -35,6 +35,7 @@ body {
   flex-wrap: wrap;
   justify-content: center;
   margin-bottom: 20px;
+  max-width: 1000px;
 }
 
 .piece {
@@ -48,3 +49,13 @@ body {
     width: 60%;
     height: auto;
 }
+
+.selected-piece img{
+    filter: brightness(70%);
+  }
+
+  .cell img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
