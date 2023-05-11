@@ -238,9 +238,9 @@ document.addEventListener("DOMContentLoaded", (event) => {
   ];
 
   for (let row = 0; row < 4; row++) {
-    for (let column = 0; column < 4; column++) {
-      board[row][column].addEventListener("click", () => {
-        placePieceOnBoard(board[row][column], row, column);
+    for (let col = 0; col < 4; col++) {
+      board[row][col].addEventListener("click", () => {
+        placePieceOnBoard(board[row][col], row, col);
       });
     }
   }
@@ -275,7 +275,7 @@ function renderPieces() {
       pieceContainer.appendChild(pieceElement);
     }
   }
-  console.log(selectedPiece)
+  console.log(selectedPiece);
 }
 
 let selectedPiece = null;
@@ -292,7 +292,7 @@ renderPieces();
 
 let currentPlayer = "Player1";
 
-function placePieceOnBoard(cell, row, column) {
+function placePieceOnBoard(cell, row, col) {
   if (cell.innerHTML == "" && selectedPiece != null) {
     let pieceElement = document.createElement("img");
     pieceElement.src = pieces[selectedPiece].image;
@@ -300,18 +300,74 @@ function placePieceOnBoard(cell, row, column) {
     cell.appendChild(pieceElement);
     pieces[selectedPiece].playable = false;
     pieces[selectedPiece].isOnBoard = true;
-    boardState[row][column] = selectedPiece;
+    boardState[row][col] = selectedPiece;
+    updateLines(row, col, selectedPiece); 
     selectedPiece = null;
     renderPieces();
     switchPlayer();
-    checkForWin() 
-    console.log(boardState)
+    if (checkForWin()){
+      console.log("Player " + currentPlayer + " has won!");
+    }else console.log(boardState)
   }
 }
 
 function switchPlayer() {
   currentPlayer = currentPlayer === "Player1" ? "Player2" : "Player1";
   console.log(currentPlayer + "'s turn");
+}
+
+const lines = {
+  rows: {},
+  columns: {},
+  diagonals: {},
+};
+
+for (let i = 0; i < 4; i++) {
+  lines.rows[i] = [null, null, null, null];
+  lines.columns[i] = [null, null, null, null];
+}
+
+lines.diagonals[0] = [null, null, null, null];
+lines.diagonals[1] = [null, null, null, null];
+
+function updateLines(row, col, pieceKey) {
+  lines.rows[row][col] = pieceKey;
+  lines.columns[col][row] = pieceKey;
+
+  if (row === col) {
+    lines.diagonals[0][row] = pieceKey;
+  }
+  if (row + col === 3) {
+    lines.diagonals[1][row] = pieceKey;
+  }
+}
+
+function checkForWin() {
+  const lineTypes = ['rows', 'columns', 'diagonals'];
+
+  for (let lineType of lineTypes) {
+    for (let index in lines[lineType]) {
+      let line = lines[lineType][index];
+      if (line.length < 4) continue;
+      if (checkForCommonAttribute(line)) {
+        return true;
+      }
+    }
+  }
+  return false;
+}
+
+function checkForCommonAttribute(line) {
+  const attributes = ["fire", "air", "water", "earth"];
+  for (let attribute of attributes) {
+    const attributeValues = line.map(pieceKey => pieces[pieceKey]?.attributes[attribute]);
+    if (
+      attributeValues.every((value) => value === "active") ||
+      attributeValues.every((value) => value === "passive")
+    ) {
+      return true;
+    }
+  }
 }
 
 //To do:
