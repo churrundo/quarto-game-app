@@ -8,7 +8,9 @@ const pieces = {
       earth: "active",
     },
     image: "../styles/figures/puer.png",
-    inPlay: true,
+    playable: true,
+    isSelected: false,
+    isOnBoard: false,
   },
   amissio: {
     name: "Amissio",
@@ -19,7 +21,9 @@ const pieces = {
       earth: "passive",
     },
     image: "../styles/figures/amissio.png",
-    inPlay: true,
+    playable: true,
+    isSelected: false,
+    isOnBoard: false,
   },
   albus: {
     name: "Albus",
@@ -30,7 +34,9 @@ const pieces = {
       earth: "passive",
     },
     image: "../styles/figures/albus.png",
-    inPlay: true,
+    playable: true,
+    isSelected: false,
+    isOnBoard: false,
   },
   populus: {
     name: "Populus",
@@ -41,7 +47,9 @@ const pieces = {
       earth: "passive",
     },
     image: "../styles/figures/populus.png",
-    inPlay: true,
+    playable: true,
+    isSelected: false,
+    isOnBoard: false,
   },
   fortunaMajor: {
     name: "Fortuna Major",
@@ -52,7 +60,9 @@ const pieces = {
       earth: "active",
     },
     image: "../styles/figures/fortuna-major.png",
-    inPlay: true,
+    playable: true,
+    isSelected: false,
+    isOnBoard: false,
   },
   conjunctio: {
     name: "Conjunctio",
@@ -63,7 +73,9 @@ const pieces = {
       earth: "passive",
     },
     image: "../styles/figures/conjunctio.png",
-    inPlay: true,
+    playable: true,
+    isSelected: false,
+    isOnBoard: false,
   },
   puella: {
     name: "Puella",
@@ -74,7 +86,9 @@ const pieces = {
       earth: "active",
     },
     image: "../styles/figures/puella.png",
-    inPlay: true,
+    playable: true,
+    isSelected: false,
+    isOnBoard: false,
   },
   rubeus: {
     name: "Rubeus",
@@ -85,7 +99,9 @@ const pieces = {
       earth: "passive",
     },
     image: "../styles/figures/rubeus.png",
-    inPlay: true,
+    playable: true,
+    isSelected: false,
+    isOnBoard: false,
   },
   acquisitio: {
     name: "Acquisitio",
@@ -96,7 +112,9 @@ const pieces = {
       earth: "active",
     },
     image: "../styles/figures/acquisitio.png",
-    inPlay: true,
+    playable: true,
+    isSelected: false,
+    isOnBoard: false,
   },
   carcer: {
     name: "Carcer",
@@ -107,7 +125,9 @@ const pieces = {
       earth: "active",
     },
     image: "../styles/figures/carcer.png",
-    inPlay: true,
+    playable: true,
+    isSelected: false,
+    isOnBoard: false,
   },
   tristitia: {
     name: "Tristitia",
@@ -118,7 +138,9 @@ const pieces = {
       earth: "active",
     },
     image: "../styles/figures/tristitia.png",
-    inPlay: true,
+    playable: true,
+    isSelected: false,
+    isOnBoard: false,
   },
   laetitia: {
     name: "Laetitia",
@@ -129,7 +151,9 @@ const pieces = {
       earth: "passive",
     },
     image: "../styles/figures/laetitia.png",
-    inPlay: true,
+    playable: true,
+    isSelected: false,
+    isOnBoard: false,
   },
   caudaDraconis: {
     name: "Cauda Draconis",
@@ -140,7 +164,9 @@ const pieces = {
       earth: "passive",
     },
     image: "../styles/figures/cauda-draconis.png",
-    inPlay: true,
+    playable: true,
+    isSelected: false,
+    isOnBoard: false,
   },
   caputDraconis: {
     name: "Caput Draconis",
@@ -151,7 +177,9 @@ const pieces = {
       earth: "active",
     },
     image: "../styles/figures/caput-draconis.png",
-    inPlay: true,
+    playable: true,
+    isSelected: false,
+    isOnBoard: false,
   },
   fortunaMinor: {
     name: "Fortuna Minor",
@@ -162,7 +190,9 @@ const pieces = {
       earth: "passive",
     },
     image: "../styles/figures/fortuna-minor.png",
-    inPlay: true,
+    playable: true,
+    isSelected: false,
+    isOnBoard: false,
   },
   via: {
     name: "Via",
@@ -173,37 +203,88 @@ const pieces = {
       earth: "active",
     },
     image: "../styles/figures/via.png",
-    inPlay: true,
+    playable: true,
+    isSelected: false,
+    isOnBoard: false,
   },
 };
+
+document.addEventListener("DOMContentLoaded", (event) => {
+  const board = [
+    [
+      document.getElementById("cell-0-0"),
+      document.getElementById("cell-1-0"),
+      document.getElementById("cell-2-0"),
+      document.getElementById("cell-3-0"),
+    ],
+    [
+      document.getElementById("cell-0-1"),
+      document.getElementById("cell-1-1"),
+      document.getElementById("cell-2-1"),
+      document.getElementById("cell-3-1"),
+    ],
+    [
+      document.getElementById("cell-0-2"),
+      document.getElementById("cell-1-2"),
+      document.getElementById("cell-2-2"),
+      document.getElementById("cell-3-2"),
+    ],
+    [
+      document.getElementById("cell-0-3"),
+      document.getElementById("cell-1-3"),
+      document.getElementById("cell-2-3"),
+      document.getElementById("cell-3-3"),
+    ],
+  ];
+
+  for (let row = 0; row < 4; row++) {
+    for (let column = 0; column < 4; column++) {
+      board[row][column].addEventListener("click", () => {
+        placePieceOnBoard(board[row][column], row, column);
+      });
+    }
+  }
+});
+let boardState = [
+  [null, null, null, null],
+  [null, null, null, null],
+  [null, null, null, null],
+  [null, null, null, null],
+];
 
 function renderPieces() {
   const pieceContainer = document.getElementById("piece-container");
   pieceContainer.innerHTML = "";
   for (let key in pieces) {
     let piece = pieces[key];
-    if (piece.inPlay) {
+    if ((piece.playable || piece.isSelected) && !piece.isOnBoard) {
       let pieceElement = document.createElement("div");
       pieceElement.classList.add("piece");
+      if (piece.isSelected) {
+        pieceElement.classList.add("selected");
+      }
       pieceElement.innerHTML = `
       <img src="${piece.image}" alt="${piece.name}">`;
       pieceElement.addEventListener("click", function () {
-        const previouslySelectedPiece =
-          document.querySelector(".selected-piece");
+        const previouslySelectedPiece = document.querySelector(".selected");
         if (previouslySelectedPiece) {
-          previouslySelectedPiece.classList.remove("selected-piece");
+          previouslySelectedPiece.classList.remove("selected");
         }
         selectPiece(key);
       });
       pieceContainer.appendChild(pieceElement);
     }
   }
+  console.log(selectedPiece)
 }
 
 let selectedPiece = null;
 function selectPiece(pieceKey) {
+  if (selectedPiece) {
+    pieces[selectedPiece].isSelected = false;
+  }
   selectedPiece = pieceKey;
-  pieces[pieceKey].inPlay = false;
+  pieces[pieceKey].isSelected = true;
   renderPieces();
 }
 
@@ -211,15 +292,20 @@ renderPieces();
 
 let currentPlayer = "Player1";
 
-function placePieceOnBoard(cell) {
+function placePieceOnBoard(cell, row, column) {
   if (cell.innerHTML == "" && selectedPiece != null) {
     let pieceElement = document.createElement("img");
     pieceElement.src = pieces[selectedPiece].image;
     pieceElement.alt = pieces[selectedPiece.name];
     cell.appendChild(pieceElement);
-    pieces[selectedPiece].inPlay = false;
+    pieces[selectedPiece].playable = false;
+    pieces[selectedPiece].isOnBoard = true;
+    boardState[row][column] = selectedPiece;
     selectedPiece = null;
+    renderPieces();
     switchPlayer();
+    checkForWin() 
+    console.log(boardState)
   }
 }
 
@@ -228,9 +314,7 @@ function switchPlayer() {
   console.log(currentPlayer + "'s turn");
 }
 
-const cells = document.querySelectorAll('.cell');
-cells.forEach((cell) => {
-  cell.addEventListener("click", () => {
-    placePieceOnBoard(cell);
-  });
-});
+//To do:
+// -Winning condition
+// -End of Game
+// -Error Handling
