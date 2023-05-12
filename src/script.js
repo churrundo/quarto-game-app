@@ -279,13 +279,16 @@ function renderPieces() {
 }
 
 let selectedPiece = null;
+
 function selectPiece(pieceKey) {
-  if (selectedPiece) {
-    pieces[selectedPiece].isSelected = false;
+  if (gameStarted && !gameOver) {
+    if (selectedPiece) {
+      pieces[selectedPiece].isSelected = false;
+    }
+    selectedPiece = pieceKey;
+    pieces[pieceKey].isSelected = true;
+    renderPieces();
   }
-  selectedPiece = pieceKey;
-  pieces[pieceKey].isSelected = true;
-  renderPieces();
 }
 
 renderPieces();
@@ -293,6 +296,10 @@ renderPieces();
 let currentPlayer = "Player1";
 
 function placePieceOnBoard(cell, row, col) {
+  if (gameOver) {
+    gameStatus.textContent = "Game over!";
+    return;
+  }
   if (cell.innerHTML == "" && selectedPiece != null) {
     let pieceElement = document.createElement("img");
     pieceElement.src = pieces[selectedPiece].image;
@@ -301,19 +308,21 @@ function placePieceOnBoard(cell, row, col) {
     pieces[selectedPiece].playable = false;
     pieces[selectedPiece].isOnBoard = true;
     boardState[row][col] = selectedPiece;
-    updateLines(row, col, selectedPiece); 
+    updateLines(row, col, selectedPiece);
     selectedPiece = null;
     renderPieces();
     switchPlayer();
-    if (checkForWin()){
+    if (checkForWin()) {
+      gameOver = true;
+      updateGameStatus();
       console.log("Player " + currentPlayer + " has won!");
-    }else console.log(boardState)
+    } else console.log(boardState);
   }
 }
 
 function switchPlayer() {
   currentPlayer = currentPlayer === "Player1" ? "Player2" : "Player1";
-  console.log(currentPlayer + "'s turn");
+  updateGameStatus();
 }
 
 const lines = {
@@ -343,7 +352,7 @@ function updateLines(row, col, pieceKey) {
 }
 
 function checkForWin() {
-  const lineTypes = ['rows', 'columns', 'diagonals'];
+  const lineTypes = ["rows", "columns", "diagonals"];
 
   for (let lineType of lineTypes) {
     for (let index in lines[lineType]) {
@@ -360,17 +369,81 @@ function checkForWin() {
 function checkForCommonAttribute(line) {
   const attributes = ["fire", "air", "water", "earth"];
   for (let attribute of attributes) {
-    const attributeValues = line.map(pieceKey => pieces[pieceKey]?.attributes[attribute]);
+    const attributeValues = line.map(
+      (pieceKey) => pieces[pieceKey]?.attributes[attribute]
+    );
     if (
       attributeValues.every((value) => value === "active") ||
       attributeValues.every((value) => value === "passive")
     ) {
+      gameOver = true;
+      updateGameStatus();
       return true;
     }
   }
 }
 
+let gameStatus = document.getElementById("game-status");
+
+let gameStarted = false;
+
+document.getElementById("start-button").addEventListener("click", function () {
+  if (gameStarted) {
+    gameStarted = false;
+    this.textContent = "Start";
+    resetGame();
+  } else {
+    gameStarted = true;
+    this.textContent = "Play Again";
+    updateGameStatus();
+  }
+});
+
+function updateGameStatus() {
+  if (gameOver) {
+    gameStatus.textContent = "Game over! " + currentPlayer + " wins!";
+  } else {
+    const playerPicking = currentPlayer === "Player1" ? "Player2" : "Player1";
+    gameStatus.textContent =
+      currentPlayer + " plays, " + playerPicking + " picks.";
+  }
+}
+
+function resetGame() {
+  gameStarted = false;
+  currentPlayer = "Player1";
+  gameOver = false;
+
+  boardState = [
+    [null, null, null, null],
+    [null, null, null, null],
+    [null, null, null, null],
+    [null, null, null, null],
+  ];
+
+  for (let pieceKey in pieces) {
+    pieces[pieceKey].isSelected = false;
+    pieces[pieceKey].isOnBoard = false;
+    pieces[pieceKey].playable = true;
+  }
+
+  for (let i = 0; i < 4; i++) {
+    lines.rows[i] = [null, null, null, null];
+    lines.columns[i] = [null, null, null, null];
+  }
+  lines.diagonals[0] = [null, null, null, null];
+  lines.diagonals[1] = [null, null, null, null];
+
+  for (let row = 0; row < 4; row++) {
+    for (let col = 0; col < 4; col++) {
+      document.getElementById(`cell-${row}-${col}`).innerHTML = "";
+    }
+  }
+
+  updateGameStatus();
+}
+
+let gameOver = false;
+
 //To do:
-// -Winning condition
-// -End of Game
-// -Error Handling
+// reset button
