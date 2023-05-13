@@ -62,7 +62,10 @@ body {
   object-fit: contain;
 }
 
-#game-status {
-  margin: 20px;
+#game-info{
   text-align: center;
+}
+
+#start-button {
+  justify-self: center;
 }

@@ -394,7 +394,7 @@ document.getElementById("start-button").addEventListener("click", function () {
     resetGame();
   } else {
     gameStarted = true;
-    this.textContent = "Play Again";
+    this.textContent = "Reset";
     updateGameStatus();
   }
 });
@@ -405,14 +405,16 @@ function updateGameStatus() {
   } else {
     const playerPicking = currentPlayer === "Player1" ? "Player2" : "Player1";
     gameStatus.textContent =
-      currentPlayer + " plays, " + playerPicking + " picks.";
+      currentPlayer + " picks, " + playerPicking + " plays.";
   }
 }
 
 function resetGame() {
   gameStarted = false;
+  selectedPiece = null;
   currentPlayer = "Player1";
   gameOver = false;
+  gameStatus.textContent = "Game reset. Press Start to play again.";
 
   boardState = [
     [null, null, null, null],
@@ -439,8 +441,7 @@ function resetGame() {
       document.getElementById(`cell-${row}-${col}`).innerHTML = "";
     }
   }
-
-  updateGameStatus();
+  renderPieces()
 }
 
 let gameOver = false;
