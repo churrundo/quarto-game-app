@@ -252,8 +252,9 @@ let boardState = [
   [null, null, null, null],
 ];
 
+const pieceContainer = document.getElementById("piece-container");
+
 function renderPieces() {
-  const pieceContainer = document.getElementById("piece-container");
   pieceContainer.innerHTML = "";
   for (let key in pieces) {
     let piece = pieces[key];
@@ -352,16 +353,19 @@ function updateLines(row, col, pieceKey) {
 }
 
 function checkForWin() {
-  const lineTypes = ["rows", "columns", "diagonals"];
-
-  for (let lineType of lineTypes) {
-    for (let index in lines[lineType]) {
-      let line = lines[lineType][index];
-      if (line.length < 4) continue;
-      if (checkForCommonAttribute(line)) {
-        return true;
-      }
+  for (let i = 0; i < 4; i++) {
+    if (
+      checkForCommonAttribute(lines.rows[i]) ||
+      checkForCommonAttribute(lines.columns[i])
+    ) {
+      return true;
     }
+  }
+  if (
+    checkForCommonAttribute(lines.diagonals[0]) ||
+    checkForCommonAttribute(lines.diagonals[1])
+  ) {
+    return true;
   }
   return false;
 }
@@ -401,7 +405,13 @@ document.getElementById("start-button").addEventListener("click", function () {
 
 function updateGameStatus() {
   if (gameOver) {
-    gameStatus.textContent = "Game over! " + currentPlayer + " wins!";
+    pieceContainer.innerHTML = "";
+    let winMessage = document.createElement("div");
+    winMessage.textContent = "Game over! " + currentPlayer + " wins!";
+    winMessage.style.fontSize = "30px";
+    winMessage.style.color = "#383838";
+    winMessage.style.textAlign = "center";
+    pieceContainer.appendChild(winMessage);
   } else {
     const playerPicking = currentPlayer === "Player1" ? "Player2" : "Player1";
     gameStatus.textContent =
@@ -441,7 +451,7 @@ function resetGame() {
       document.getElementById(`cell-${row}-${col}`).innerHTML = "";
     }
   }
-  renderPieces()
+  renderPieces();
 }
 
 let gameOver = false;
